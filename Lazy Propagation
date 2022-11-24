@@ -35,15 +35,17 @@ using namespace std;
 
 /*--------------------------Code----------------------------------------------------------------------------------------*/
 
-int lazy[10005];
+// int lazy[10005];
 
 class SGTree {
 
-	vector<int> seg;
+	vector<int> seg,lazy;
 	public :
 	SGTree(int n){
 		seg.resize(4*n+1);
+		lazy.resize(4*n+1);
 	}
+	public:
 	void build(int ind,int low,int high,vii arr){
 	if(low==high){
 		seg[ind]=arr[low];
@@ -69,7 +71,7 @@ void rangeupdate(int ind,int low, int high,int l,int r,int val){
 		return;
 	}
 
-	if(l>=low and r<=high){
+	if(low>=l and high<=r){
 		seg[ind]+=(high-low+1)*val;
 		if(low!=high){
 			lazy[2*ind+1]+=val;
@@ -85,7 +87,7 @@ void rangeupdate(int ind,int low, int high,int l,int r,int val){
 	seg[ind]=seg[2*ind+1]+seg[2*ind+2];
 }
 
-int rangequery(int ind,int low,int high,int l,int r,int val){
+int rangequery(int ind,int low,int high,int l,int r){
 	if(lazy[ind]!=0){
 		seg[ind]+=(high-low+1)*lazy[ind];
 		if(low!=high){
@@ -105,8 +107,8 @@ int rangequery(int ind,int low,int high,int l,int r,int val){
 
 	int mid=low+(high-low)/2;
 
-	return rangequery(2*ind+1,low,mid,l,r,val)
-			+rangequery(2*ind+2,mid+1,high,l,r,val);
+	return rangequery(2*ind+1,low,mid,l,r)
+			+rangequery(2*ind+2,mid+1,high,l,r);
 }
 };
 
@@ -122,9 +124,20 @@ int32_t main(){
 	SGTree seg(n);
 	seg.build(0,0,n-1,arr);
 
-	cout<<seg.rangequery(0,0,n-1,0,4,5)<<endl;
-	seg.rangeupdate(0,0,n-1,0,4,5);
-	cout<<seg.rangequery(0,0,n-1,0,4,5)<<endl;
-	seg.rangeupdate(0,0,n-1,0,4,5);
-	cout<<seg.rangequery(0,0,n-1,0,4,5)<<endl;
+	int q;
+	cin>>q;
+	while(q--){
+		int type;
+		cin>>type;
+		if(type==1){
+			int l,r;
+			cin>>l>>r;
+			cout<<seg.rangequery(0,0,n-1,l,r)<<endl;
+		}
+		else{
+			int l,r,val;
+			cin>>l>>r>>val;
+			seg.rangeupdate(0,0,n-1,l,r,val);
+		}
+	}
 }
